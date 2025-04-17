@@ -1,0 +1,67 @@
+import { useState } from "react";
+import { auth } from "../firebaseConfig";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
+import RefreshIcon from '@mui/icons-material/Refresh';
+
+const Signup = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);  // State to handle loading
+  const navigate = useNavigate();
+
+  const handleSignup = async (e) => {
+    e.preventDefault();
+    setLoading(true);  // Start loading indicator
+    try {
+      await createUserWithEmailAndPassword(auth, email, password);
+      setMessage("Account created successfully!");
+      setLoading(false);  // Stop loading indicator
+      navigate("/login");  // Navigate to login page
+    } catch (error) {
+      setMessage("Error: " + error.message);
+      setLoading(false);  // Stop loading indicator
+    }
+  };
+
+  return (
+    <div className="h-screen flex justify-center items-center bg-gray-100">
+      <div className="w-full max-w-sm p-6 bg-white shadow-lg rounded-lg">
+        <h2 className="text-center text-2xl font-semibold mb-4">Sign Up</h2>
+        <form onSubmit={handleSignup}>
+          <div className="space-y-4">
+            <input
+              type="email"
+              placeholder="Email"
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="w-full p-2 border border-gray-300 rounded"
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="w-full p-2 border border-gray-300 rounded"
+            />
+            <button
+              type="submit"
+              className="w-full p-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+              disabled={loading}  // Disable button while loading
+            >
+              {loading ? (
+                <RefreshIcon className="animate-spin"/> // Spinner icon while loading
+              ) : (
+                "Sign Up"
+              )}
+            </button>
+          </div>
+        </form>
+        <p className="mt-4 text-center text-red-500">{message}</p>
+      </div>
+    </div>
+  );
+};
+
+export default Signup;
