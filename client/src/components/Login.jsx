@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { auth } from "../firebaseConfig";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import axios from "axios";
@@ -7,18 +8,21 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
+  const navigate = useNavigate(); // For redirection
 
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
+      // Sign in with Firebase
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const token = await userCredential.user.getIdToken();
 
-      // Send token to the server for verification
+      // Send token to your backend server
       const response = await axios.post("http://localhost:3000/verify-token", { token });
 
       if (response.data.success) {
-        setMessage("Login successful!");
+        // Redirect to Home page if verification is successful
+        navigate("/home");
       } else {
         setMessage("Invalid login.");
       }
@@ -59,7 +63,6 @@ const Login = () => {
       </div>
     </div>
   );
-
 };
 
 export default Login;
