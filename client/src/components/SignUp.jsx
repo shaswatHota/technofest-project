@@ -19,6 +19,16 @@ const Signup = () => {
       setMessage("Account created successfully!");
       setLoading(false);  // Stop loading indicator
       navigate("/login");  // Navigate to login page
+      const user = userCredential.user;
+
+      // Add additional user data to Firestore
+      await setDoc(doc(db, "users", user.uid), {
+        uid: user.uid,
+        email,
+        createdAt: new Date(),
+      });
+
+      alert("User registered successfully!");
     } catch (error) {
       setMessage("Error: " + error.message);
       setLoading(false);  // Stop loading indicator

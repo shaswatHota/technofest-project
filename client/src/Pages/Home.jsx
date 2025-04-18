@@ -1,71 +1,60 @@
-import React, { useState } from 'react';
-import '../styles/Home.css';
-import Post from '../components/Posts';
-import Navbar from '../components/Navbar';
+import React, { useState } from "react";
+import { getAuth } from "firebase/auth";
+import api from "../services/api";
+import Feed from "../components/Feed";
+import "../styles/Home.css";
+import { useNavigate } from "react-router-dom";
 
-const dummyPosts = [
-  {
-    name: 'Ravi Kumar',
-    batch: '2015',
-    content: 'Excited to mentor new students this year!',
-    time: '2 hours ago',
-  },
-  {
-    name: 'Aisha Patel',
-    batch: '2020',
-    content: 'Landed a role at Amazon! Thanks to the alumni network ❤️',
-    time: '1 day ago',
-  },
-];
+const Home = () => {
+  const [postContent, setPostContent] = useState("");
+  const [refreshTrigger, setRefreshTrigger] = useState(0); // 🆕 Add trigger
+  const navigate = useNavigate();
 
-const techTrendingUpdates = [
-  'AI advancements are transforming the tech industry in 2025.',
-  'Quantum computing: The next frontier for computing power.',
-  '5G networks are revolutionizing mobile communication.',
-  'The rise of blockchain technology in decentralized finance.',
-  'VR and AR: Shaping the future of immersive experiences.',
-];
+  const handlePostSubmit = async () => {
+    if (!postContent) return;
 
-function Home() {
+    const auth = getAuth();
+    const user = auth.currentUser;
+
+    if (!user) {
+      navigate("/signup");
+      return;
+    }
+
+    const token = await user.getIdToken();
+
+    try {
+      await api.post(
+        "/create-post",
+        { content: postContent, time: new Date().toISOString() },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setPostContent("");
+      setRefreshTrigger((prev) => prev + 1); // 🆕 Trigger Feed refresh
+    } catch (err) {
+      console.error("Error creating post:", err);
+    }
+  };
+
   return (
-    <>
-      <Navbar />
-
-      <div className="home-container">
-        {/* Alumni Connect - Centered */}
-        <div className="center-column">
-          <div className="home-header">
-            <h2>Alumni Connect</h2>
-            <button className="chat-button">💬 Chat</button>
-          </div>
-
-          <div className="post-input">
-            <textarea placeholder="What's happening?" rows="3"></textarea>
-            <button className="post-btn">Post</button>
-          </div>
-
-          <div className="feed">
-            {dummyPosts.map((post, idx) => (
-              <Post key={idx} {...post} />
-            ))}
-          </div>
-        </div>
-
-        {/* Tech Trending Section */}
-        <div className="right-column">
-          <h3>Tech Trending</h3>
-          <ul>
-            {techTrendingUpdates.map((update, idx) => (
-              <li key={idx}>
-                <span className="trend-bullet">🔹</span>
-                {update}
-              </li>
-            ))}
-          </ul>
-        </div>
+    <div className="home-container">
+      <div className="home-header">
+        <h2>Welcome to Alumni Connect</h2>
       </div>
-    </>
+
+      <div className="post-input">
+        <textarea
+          value={postContent}
+          onChange={(e) => setPostContent(e.target.value)}
+          placeholder="What's happening?"
+          rows="3"
+        />
+        <button onClick={handlePostSubmit} className="bg-blue-500">Post</button>
+      </div>
+
+      <Feed refreshTrigger={refreshTrigger} /> {/* 🆕 Pass the trigger */}
+    </div>
   );
-}
+};
 
 export default Home;
