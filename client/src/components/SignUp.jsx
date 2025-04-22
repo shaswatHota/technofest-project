@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { auth } from "../firebaseConfig";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { useNavigate } from "react-router-dom";
+import { Link,useNavigate } from "react-router-dom";
 import RefreshIcon from '@mui/icons-material/Refresh';
 
 const Signup = () => {
@@ -66,6 +66,7 @@ const Signup = () => {
                 "Sign Up"
               )}
             </button>
+            already have an account? <Link className="text-blue-500 relative after:absolute after:bottom-0 after:left-0 after:w-0 hover:after:w-full after:h-[2px] after:bg-blue-500 after:transition-all after:duration-300" to="/login">Login </Link>
           </div>
         </form>
         <p className="mt-4 text-center text-red-500">{message}</p>

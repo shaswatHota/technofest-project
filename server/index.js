@@ -54,7 +54,7 @@ app.post("/create-post", checkAuth, async (req, res) => {
 });
 
 // Get Posts Route
-app.get("/posts", async (req, res) => {
+app.get("/posts",checkAuth, async (req, res) => {
   try {
     const snapshot = await db.collection("posts").orderBy("time", "desc").get();
     const posts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
