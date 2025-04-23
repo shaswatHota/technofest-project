@@ -1,6 +1,7 @@
-import express from "express";
-import admin from "../firebase.js"
-import userProfileSchema from "../schemas/userProfile.js";
+const express = require("express");
+const admin = require("../firebase.js");
+const userProfileSchema = require("../schemas/userProfile.js");
+
 
 const router = express.Router();
 
@@ -30,4 +31,4 @@ router.post("/complete-profile", async (req,res)=>{
 
 });
 
-export default router;
+module.exports = router;

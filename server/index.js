@@ -1,4 +1,4 @@
-import profileRoutes from "./routes/profile.js";
+const profileRoutes = require("./routes/firstLoginProfile");
 
 
 const express = require("express");

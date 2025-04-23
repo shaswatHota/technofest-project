@@ -1,4 +1,4 @@
-import {z} from zod;
+const {z} =require("zod");
 
 const userProfileSchema = z.object({
 
@@ -10,8 +10,8 @@ const userProfileSchema = z.object({
         end : z.number(),
 
     }),
-    profilePicUrl : z.string().oprional()
+    profilePicUrl : z.string().optional()
 
 
 });
-export default userProfileSchema;
+module.exports = userProfileSchema;

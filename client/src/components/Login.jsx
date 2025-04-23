@@ -1,8 +1,7 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { auth } from "../firebaseConfig";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { Link } from 'react-router-dom';
 import axios from "axios";
 import RefreshIcon from '@mui/icons-material/Refresh';
 
@@ -24,8 +23,8 @@ const Login = () => {
 
       // Send token to your backend server
       const response = await axios.post("http://localhost:3000/verify-token", { token });
-      console.log(token);
-      console.log("done")
+      // console.log(token);
+      // console.log("done");
 
       if (response.data.success) {
         
