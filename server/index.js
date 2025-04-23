@@ -1,3 +1,6 @@
+import profileRoutes from "./routes/profile.js";
+
+
 const express = require("express");
 const cors = require("cors");
 const admin = require("./firebase");
@@ -16,7 +19,7 @@ app.post("/verify-token", async (req, res) => {
 
   try {
     const decodedToken = await admin.auth().verifyIdToken(token);
-    const { uid, email, name } = decodedToken;
+    const { uid, email } = decodedToken;
 
     const userRef = db.collection("users").doc(uid);
     const userDoc = await userRef.get();
@@ -26,7 +29,6 @@ app.post("/verify-token", async (req, res) => {
       await userRef.set({
         uid,
         email: email || "", // fallback if missing
-        name: name || "",   // fallback if missing
         createdAt: new Date().toISOString(),
       });
     }
@@ -37,6 +39,9 @@ app.post("/verify-token", async (req, res) => {
     res.status(401).json({ success: false, message: "Unauthorized" });
   }
 });
+
+//first profile building endpoint
+app.use("/api", profileRoutes);
 
 
 // Create Post Route with Authentication Middleware
