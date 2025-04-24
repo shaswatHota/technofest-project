@@ -1,13 +1,19 @@
 import axios from "axios";
 
-// Automatically attach token to requests
-const token = localStorage.getItem("token");
-
 const api = axios.create({
   baseURL: "http://localhost:3000",
-  headers: {
-    Authorization: `Bearer ${token}`,
-  },
 });
+
+// Dynamically add token to every request
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("token"); // get latest token
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
 
 export default api;

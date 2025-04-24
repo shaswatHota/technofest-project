@@ -1,12 +1,23 @@
-// pages/InitialCreateProfile.jsx
+
 import { useState } from "react";
-import { completeProfile } from "../services/api";
-import { auth } from "../services/firebase";
+import api from "../services/api";
+import { auth } from "../firebaseConfig";
 import { useNavigate } from "react-router-dom";
 
 const CreateProfile = () => {
   const [form, setForm] = useState({ username: "", collegeName: "", start: "", end: "" });
   const navigate = useNavigate();
+
+
+  const completeProfile = async ( payload) => {
+    try {
+      return await api.post("/api/complete-profile", payload);
+      
+    } catch (error) {
+      console.error("Error completing profile:", error.response?.data || error.message);
+      throw error;
+    }
+  };
 
   const handleSubmit = async () => {
     const user = auth.currentUser;
@@ -21,7 +32,7 @@ const CreateProfile = () => {
       },
     };
 
-    await completeProfile(token, payload);
+    await completeProfile( payload);
     navigate("/home");
   };
 
@@ -35,3 +46,5 @@ const CreateProfile = () => {
     </div>
   );
 };
+
+export default CreateProfile;

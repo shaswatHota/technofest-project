@@ -1,4 +1,4 @@
-const profileRoutes = require("./routes/firstLoginProfile");
+const profileRoutes = require("./routes/checkProfile");
 
 
 const express = require("express");
