@@ -1,22 +1,26 @@
-
 import { useEffect, useState } from "react";
 import { auth } from "../firebaseConfig";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
-import { getUserToken } from "../services/authUtil";
+import { onAuthStateChanged } from "firebase/auth";
 
 const RequireProfileComplete = ({ children }) => {
   const navigate = useNavigate();
   const [checking, setChecking] = useState(true);
 
   useEffect(() => {
-    const checkProfile = async () => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        console.error("User not logged in");
+        setChecking(false);
+        return;
+      }
+
       try {
-        const user = auth.currentUser;
-        const token = await getUserToken();
+        const token = await user.getIdToken();
         localStorage.setItem("token", token); // interceptor uses this
 
-        const res = await api.get("/api/complete-profile"); // you'll build this
+        const res = await api.get("/api/complete-profile");
         if (!res.data.profileComplete) {
           navigate("/initial-create-profile");
         }
@@ -25,9 +29,9 @@ const RequireProfileComplete = ({ children }) => {
       } finally {
         setChecking(false);
       }
-    };
+    });
 
-    checkProfile();
+    return () => unsubscribe();
   }, [navigate]);
 
   if (checking) return <div>Loading...</div>;

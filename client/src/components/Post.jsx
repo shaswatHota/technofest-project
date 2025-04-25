@@ -23,11 +23,11 @@ const formatTime = (timestamp) => {
 
   };
 
-function Post({ name, batch, content, time }) {
+function Post({ username, batch, content, time }) {
   return (
     <div className="post">
       <div className="post-header">
-        <span className="batch">({batch})</span><strong>{name}</strong><span className="">{formatTime(time)}</span>
+        <span className="batch">({batch})</span><strong>{username}</strong><span className="">{formatTime(time)}</span>
       </div>
       <p className="pl-20">{content}</p>
       

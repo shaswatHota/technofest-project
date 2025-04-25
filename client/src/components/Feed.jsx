@@ -45,7 +45,7 @@ const Feed = ({ refreshTrigger }) => {
         posts.map((post) => (
           <Post
             key={post.id}
-            name={post.name}
+            username={post.username}
             batch={post.batch}
             content={post.content}
             time={new Date(post.time).toLocaleString()}

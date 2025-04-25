@@ -59,12 +59,38 @@ app.post("/create-post", checkAuth, async (req, res) => {
 });
 
 // Get Posts Route
-app.get("/posts",checkAuth, async (req, res) => {
+app.get("/posts", checkAuth, async (req, res) => {
   try {
     const snapshot = await db.collection("posts").orderBy("time", "desc").get();
     const posts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    res.json(posts);
+
+    const enrichedPosts = await Promise.all(
+      posts.map(async post => {
+        try {
+          const userDoc = await admin.firestore().collection("users").doc(post.uid).get();
+          const userData = userDoc.exists ? userDoc.data() : {};
+
+          return {
+            ...post,
+            username: userData.username || "Unknown",
+            // Add more fields if needed:
+            // profilePicture: userData.profilePicture || null,
+            // collegeName: userData.collegeName || "Unknown College",
+          };
+        } catch (err) {
+          console.error(`❌ Error enriching post ${post.id}:`, err);
+          return {
+            ...post,
+            username: "Error",
+          };
+        }
+      })
+    );
+
+    res.status(200).json(enrichedPosts);
+
   } catch (err) {
+    console.error("❌ Error fetching posts:", err);
     res.status(500).json({ message: "Error fetching posts" });
   }
 });
